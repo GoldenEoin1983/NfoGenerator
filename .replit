@@ -1,0 +1,36 @@
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-25_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "StashApp NFO Converter"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "stash_nfo_converter"
+
+[[workflows.workflow]]
+name = "StashApp NFO Converter"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python stash_to_nfo.py --help"
+
+[[workflows.workflow]]
+name = "stash_nfo_converter"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python stash_to_nfo.py --help"
