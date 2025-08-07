@@ -180,7 +180,7 @@ class StashToNfoConverter:
         actors = []
         
         for i, performer in enumerate(performers):
-            actor = {'order': i}
+            actor: Dict[str, Any] = {'order': i}
             
             if isinstance(performer, str):
                 actor['name'] = performer
