@@ -71,6 +71,12 @@ Examples:
         help="Enable verbose output"
     )
     
+    parser.add_argument(
+        "--extract-images",
+        action="store_true",
+        help="Extract and save base64 encoded images alongside NFO file"
+    )
+    
     args = parser.parse_args()
     
     # Validate input file
@@ -125,6 +131,19 @@ Examples:
         generator = NfoGenerator(encoding=args.encoding, pretty_print=args.pretty)
         nfo_xml = generator.generate(nfo_data, data_type)
         
+        # Extract images if requested
+        extracted_images = []
+        if args.extract_images:
+            if args.verbose:
+                print(f"Extracting base64 encoded images")
+            
+            extracted_images = converter.extract_images(stash_data, output_path)
+            if extracted_images:
+                if args.verbose:
+                    print(f"Extracted {len(extracted_images)} images: {', '.join(extracted_images)}")
+            elif args.verbose:
+                print("No base64 encoded images found to extract")
+        
         # Write output file
         if args.verbose:
             print(f"Writing output file: {output_path}")
@@ -133,6 +152,9 @@ Examples:
             f.write(nfo_xml)
         
         print(f"Successfully converted '{input_path}' to '{output_path}'")
+        
+        if extracted_images:
+            print(f"Extracted {len(extracted_images)} images: {', '.join(extracted_images)}")
         
         if args.verbose:
             print(f"Output file size: {output_path.stat().st_size} bytes")
