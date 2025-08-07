@@ -2,12 +2,18 @@
 Converters for transforming StashApp data to NFO format.
 """
 
+import base64
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Any, List, Optional, Union
 
 
 class StashToNfoConverter:
     """Converts StashApp JSON data to NFO-compatible format."""
+    
+    def __init__(self):
+        """Initialize the converter."""
+        self.extracted_images: List[Dict[str, Union[str, int]]] = []
 
     def convert(self, stash_data: Dict[str, Any],
                 data_type: str) -> Dict[str, Any]:
@@ -287,3 +293,118 @@ class StashToNfoConverter:
             bio_parts.append(f"Aliases: {', '.join(aliases)}")
 
         return '\n'.join(bio_parts)
+    
+    def extract_images(self, stash_data: Dict[str, Any], output_path: Path) -> List[str]:
+        """
+        Extract and save base64 encoded images from StashApp data.
+        
+        Args:
+            stash_data: Parsed StashApp JSON data
+            output_path: Path for the output NFO file (used to determine image save location)
+            
+        Returns:
+            List of saved image filenames
+        """
+        self.extracted_images.clear()
+        saved_images = []
+        
+        # Define possible image fields in StashApp data
+        image_fields = {
+            'cover': 'poster',     # Cover image -> poster.jpg
+            'image': 'thumb',      # Generic image -> thumb.jpg
+            'poster': 'poster',    # Poster image -> poster.jpg
+            'thumbnail': 'thumb',  # Thumbnail -> thumb.jpg
+            'fanart': 'fanart'     # Fanart -> fanart.jpg
+        }
+        
+        output_dir = output_path.parent
+        base_name = output_path.stem
+        
+        for field_name, image_type in image_fields.items():
+            if field_name in stash_data:
+                image_data = stash_data[field_name]
+                if isinstance(image_data, str) and image_data:
+                    saved_file = self._save_base64_image(image_data, output_dir, base_name, image_type)
+                    if saved_file:
+                        saved_images.append(saved_file)
+        
+        return saved_images
+    
+    def _save_base64_image(self, image_data: str, output_dir: Path, base_name: str, image_type: str) -> Optional[str]:
+        """
+        Save a base64 encoded image to disk.
+        
+        Args:
+            image_data: Base64 encoded image string
+            output_dir: Directory to save the image
+            base_name: Base filename (without extension)
+            image_type: Type of image (poster, thumb, fanart)
+            
+        Returns:
+            Filename of saved image, or None if save failed
+        """
+        try:
+            # Remove data URL prefix if present (e.g., "data:image/jpeg;base64,")
+            if image_data.startswith('data:'):
+                image_data = image_data.split(',', 1)[1]
+            
+            # Decode base64 data
+            image_bytes = base64.b64decode(image_data)
+            
+            # Detect image format from header
+            image_format = self._detect_image_format(image_bytes)
+            if not image_format:
+                return None
+            
+            # Create filename
+            if image_type in ['poster', 'fanart']:
+                filename = f"{image_type}.{image_format}"
+            else:
+                filename = f"{base_name}-{image_type}.{image_format}"
+            
+            image_path = output_dir / filename
+            
+            # Save image file
+            with open(image_path, 'wb') as f:
+                f.write(image_bytes)
+            
+            # Store extraction info
+            self.extracted_images.append({
+                'type': image_type,
+                'filename': filename,
+                'size': len(image_bytes)
+            })
+            
+            return filename
+            
+        except Exception as e:
+            # Silently skip failed image extractions
+            return None
+    
+    def _detect_image_format(self, image_bytes: bytes) -> Optional[str]:
+        """
+        Detect image format from file header.
+        
+        Args:
+            image_bytes: Raw image data
+            
+        Returns:
+            Image format extension (jpg, png, gif, webp) or None
+        """
+        if not image_bytes:
+            return None
+        
+        # Check common image format headers
+        if image_bytes.startswith(b'\xff\xd8\xff'):
+            return 'jpg'
+        elif image_bytes.startswith(b'\x89PNG\r\n\x1a\n'):
+            return 'png'
+        elif image_bytes.startswith(b'GIF87a') or image_bytes.startswith(b'GIF89a'):
+            return 'gif'
+        elif image_bytes.startswith(b'RIFF') and b'WEBP' in image_bytes[:12]:
+            return 'webp'
+        elif image_bytes.startswith(b'BM'):
+            return 'bmp'
+        
+        # Default to jpg if unknown
+        return 'jpg'
