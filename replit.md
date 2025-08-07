@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a command-line tool that converts StashApp JSON metadata files into Kodi/Jellyfin compatible NFO (XML) files. The application processes three types of media metadata: scenes (videos), performers (actors), and galleries (image collections). It features automatic data type detection, field mapping between StashApp and NFO formats, and generates properly formatted XML files with UTF-8 encoding for media center compatibility.
+This is a command-line tool that converts StashApp metadata into Kodi/Jellyfin compatible NFO (XML) files. The application supports both direct StashApp API integration and JSON file processing for three types of media metadata: scenes (videos), performers (actors), and galleries (image collections). It features automatic data type detection, field mapping between StashApp and NFO formats, base64 image extraction, and generates properly formatted XML files with UTF-8 encoding for media center compatibility.
 
 ## User Preferences
 
@@ -12,9 +12,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Core Components
 
-**Modular Parser-Converter-Generator Pattern**: The application follows a clear separation of concerns with three main components:
+**Modular Parser-Converter-Generator Pattern**: The application follows a clear separation of concerns with four main components:
 - `StashParser`: Handles JSON file parsing and automatic data type detection
-- `StashToNfoConverter`: Transforms StashApp data structures into NFO-compatible formats
+- `StashApiClient`: Manages direct connection to StashApp GraphQL API for real-time data retrieval
+- `StashToNfoConverter`: Transforms StashApp data structures into NFO-compatible formats with base64 image extraction
 - `NfoGenerator`: Creates properly formatted XML output for media centers
 
 **Data Type Detection System**: Implements intelligent auto-detection by analyzing JSON structure and presence of specific fields (file/duration for scenes, gender/birthdate for performers, folder/scenes for galleries).
@@ -39,9 +40,20 @@ Preferred communication style: Simple, everyday language.
 - `argparse` for command-line interface
 - `pathlib` for file system operations
 
-**No Third-Party Dependencies**: The application is designed to run with only Python 3.6+ standard library components, ensuring easy deployment and minimal dependency management.
+**Third-Party Dependencies**:
+- `stashapp-tools`: Official StashApp API client for GraphQL communication
+- `requests`: HTTP library for API connectivity (dependency of stashapp-tools)
+- `certifi`: SSL certificate bundle (dependency of stashapp-tools)
 
 **Target Media Centers**: 
 - Kodi NFO format compatibility
 - Jellyfin NFO format compatibility
 - UTF-8 encoding support for international character sets
+- Base64 image extraction for poster/fanart files
+
+**StashApp Integration**:
+- Direct GraphQL API connectivity
+- Real-time data fetching by scene/performer/gallery ID
+- Search-based content discovery
+- Support for authenticated connections (API key or username/password)
+- Automatic type detection and data retrieval
