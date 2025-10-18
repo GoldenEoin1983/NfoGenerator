@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<movie>
+    <title>{}</title>
+    <originaltitle></originaltitle>
+		<sorttitle></sorttitle>
+		<tagline></tagline>
+		<rating></rating>
+    <userrating>{}</userrating>
+    <plot>{}</plot>
+		<outline>{plot}</outline>
+    <mpaa>XXX</mpaa>
+    <certification>{mpaa}</certification>
+    <uniqueid type="stash" default="true"></uniqueid>
+    <uniqueid type="studio" default="false"></uniqueid>
+    
+		<genre>{}</genre>
+		<genre>{}</genre>
+    <tag>{}</tag>
+		<tag>{}</tag>
+    <country></country>
+    <set>
+        <name>{}</name>
+        <overview>{}</overview>
+    </set>
+    <year>{}</year>
+    <credits></credits>
+    <director>{}</director>
+    <premiered>{YYYY-MM-DD}</premiered>
+		<aired>{premiered}</aired>
+    <studio>{}</studio>
+    <actor>
+        <name>{}</name>
+        <role></role>
+        <order>{}</order>
+    </actor>
+    <actor>
+        <name>{}</name>
+        <role></role>
+        <order>{}</order>
+    </actor>
+</movie>
