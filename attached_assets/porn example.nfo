@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<movie>
+    <title></title>
+    <originaltitle></originaltitle>
+    <sorttitle></sorttitle>
+    <set></set>
+	<set></set>
+	<set></set>
+	<userrating></userrating>
+    <year></year>
+	<releasedate></releasedate>
+    <premiered></premiered>
+    <plot>
+	<outline></outline>
+    <tagline></tagline>
+    <certification>X</certification>
+	<mpaa>X</mpaa>
+    <genre></genre>
+	<genre></genre>
+	<genre></genre>
+	<genre></genre>
+	<genre></genre>
+    <writer></writer>
+	<country></country>
+    <studio></studio>
+    <director></director>
+	<actor>
+		<name></name>
+		<role></role>
+		<thumb></thumb>
+    </actor>
+		<actor>
+		<name></name>
+		<role></role>
+		<thumb></thumb>
+    </actor>
+</movie>
