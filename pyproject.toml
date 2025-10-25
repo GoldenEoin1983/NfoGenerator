@@ -1,0 +1,8 @@
+[project]
+name = "nfo-generator"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.11"
+dependencies = [
+    "stashapp-tools>=0.2.58",
+]
